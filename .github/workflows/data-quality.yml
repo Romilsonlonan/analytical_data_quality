@@ -11,18 +11,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'poetry'
 
       - name: Install dependencies
-        run: pip install great-expectations pandas psycopg2-binary
+        run: poetry install --no-interaction --no-root
 
       - name: Run Great Expectations
         run: |
-          great_expectations checkpoint run bronze_quality || true
-          great_expectations checkpoint run silver_quality || true
+          poetry run great_expectations checkpoint run bronze_quality || true
+          poetry run great_expectations checkpoint run silver_quality || true
+
 
       - name: Report results
         run: |

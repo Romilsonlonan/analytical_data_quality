@@ -11,19 +11,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'poetry'
 
-      - name: Install safety
-        run: pip install safety bandit
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root
 
       - name: Run safety check
-        run: safety check --requirements=pyproject.toml || true
+        run: poetry run safety check --requirements=pyproject.toml || true
 
       - name: Run bandit
-        run: bandit -r src/ -f json -o bandit-report.json || true
+        run: poetry run bandit -r src/ -f json -o bandit-report.json || true
 
       - name: Check secrets
         run: |

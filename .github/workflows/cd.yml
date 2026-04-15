@@ -11,22 +11,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'poetry'
 
       - name: Install dependencies
-        run: |
-          pip install -e .
+        run: poetry install --no-interaction --no-root
 
       - name: Run dbt tests
         run: |
           cd dbt
           cp profiles.yml profiles.yml
-          dbt deps
-          dbt debug
-          dbt test
+          poetry run dbt deps
+          poetry run dbt debug
+          poetry run dbt test
 
   deploy:
     needs: test
@@ -35,21 +38,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'poetry'
 
       - name: Install dependencies
-        run: |
-          pip install -e .
+        run: poetry install --no-interaction --no-root
 
       - name: Deploy to production
         run: |
           cd dbt
           cp profiles.yml profiles.yml
-          dbt deps
-          dbt run --target prod
+          poetry run dbt deps
+          poetry run dbt run --target prod
+
         # TODO: Configurar secrets de produção no GitHub quando necessário:
         # POSTGRES_LAKEHOUSE_HOST, POSTGRES_LAKEHOUSE_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_LAKEHOUSE_DB
         # env:
