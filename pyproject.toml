@@ -22,10 +22,11 @@ dbt-postgres = "^1.10.0"
 apache-airflow-providers-postgres = "^6.0.0"
 
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "^24.0.0"
 ruff = "^0.2.0"
 mypy = "^1.8.0"
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -12,35 +12,43 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'poetry'
 
       - name: Install dependencies
-        run: pip install ruff black mypy
+        run: poetry install --no-interaction --no-root
 
       - name: Run ruff
-        run: ruff check src/ tests/
+        run: poetry run ruff check .
 
       - name: Run black
-        run: black --check src/ tests/
+        run: poetry run black --check .
 
       - name: Run mypy
-        run: mypy src/
+        run: poetry run mypy .
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install poetry
+        run: pipx install poetry
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'poetry'
 
       - name: Install dependencies
-        run: pip install -e .
+        run: poetry install --no-interaction --no-root
 
       - name: Run pytest
-        run: pytest tests/ -v
+        run: poetry run pytest tests/ -v
