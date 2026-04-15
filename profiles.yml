@@ -1,0 +1,38 @@
+ilp_dev:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: admin
+      password: admin123
+      dbname: industrial_logistics
+      schema: staging
+      threads: 4
+      keepalives_idle: 0
+      connect_timeout: 10
+
+    staging:
+      type: postgres
+      host: "{{ env_var('DB_HOST') }}"
+      port: 5432
+      user: "{{ env_var('DB_USER') }}"
+      password: "{{ env_var('DB_PASSWORD') }}"
+      dbname: industrial_logistics_staging
+      schema: staging
+      threads: 8
+      keepalives_idle: 0
+      connect_timeout: 10
+
+    prod:
+      type: postgres
+      host: "{{ env_var('DB_HOST') }}"
+      port: 5432
+      user: "{{ env_var('DB_USER') }}"
+      password: "{{ env_var('DB_PASSWORD') }}"
+      dbname: industrial_logistics_prod
+      schema: staging
+      threads: 16
+      keepalives_idle: 0
+      connect_timeout: 10

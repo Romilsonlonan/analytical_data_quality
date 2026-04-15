@@ -1,5 +1,6 @@
 name: industrial_logistics_platform
 version: '1.0.0'
+profile: ilp_dev
 
 config-version: 2
 
@@ -9,6 +10,8 @@ vars:
 
 models:
   industrial_logistics_platform:
+    +docs:
+      node_color: "#3498db"
     staging:
       +schema: staging
       +materialized: view
@@ -27,19 +30,6 @@ quoting:
   schema: false
   database: false
 
-docs:
-  node_color: "#3498db"
-
 tests:
   +store_failures: true
   +store_failures_as: table
-
-semantic_models:
-  +schema: refined
-
-exposures:
-  +depends_on:
-    - ref('fct_orders_summary')
-  +owner:
-    name: data_team
-    email: data-team@company.com
