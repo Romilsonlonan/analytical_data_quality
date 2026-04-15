@@ -50,9 +50,11 @@ jobs:
           cp profiles.yml profiles.yml
           dbt deps
           dbt run --target prod
-        env:
-          POSTGRES_LAKEHOUSE_HOST: ${{ secrets.POSTGRES_LAKEHOUSE_HOST }}
-          POSTGRES_LAKEHOUSE_PORT: ${{ secrets.POSTGRES_LAKEHOUSE_PORT }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_LAKEHOUSE_DB: ${{ secrets.POSTGRES_LAKEHOUSE_DB }}
+        # TODO: Configurar secrets de produção no GitHub quando necessário:
+        # POSTGRES_LAKEHOUSE_HOST, POSTGRES_LAKEHOUSE_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_LAKEHOUSE_DB
+        # env:
+        #   POSTGRES_LAKEHOUSE_HOST: ${{ secrets.POSTGRES_LAKEHOUSE_HOST }}
+        #   POSTGRES_LAKEHOUSE_PORT: ${{ secrets.POSTGRES_LAKEHOUSE_PORT }}
+        #   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        #   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        #   POSTGRES_LAKEHOUSE_DB: ${{ secrets.POSTGRES_LAKEHOUSE_DB }}
