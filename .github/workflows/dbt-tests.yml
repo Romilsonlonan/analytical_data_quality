@@ -20,19 +20,15 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dbt
-        run: pip install dbt-postgres
-
-      - name: Create profiles.yml
+      - name: Install dependencies
         run: |
-          mkdir -p ~/.dbt
-          echo "${{ secrets.DBT_PROFILES }}" > ~/.dbt/profiles.yml
+          pip install -e .
 
-      - name: Run dbt deps
-        run: cd dbt && dbt deps
-
-      - name: Run dbt test
-        run: cd dbt && dbt test
-
-      - name: Run dbt run
-        run: cd dbt && dbt run
+      - name: Run dbt tests
+        run: |
+          cd dbt
+          cp profiles.yml profiles.yml
+          dbt deps
+          dbt debug
+          dbt test
+          dbt run
