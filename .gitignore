@@ -1,0 +1,103 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.env/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+airflow_logs/
+
+# Data
+data/
+data/raw/
+data/processed/
+
+# Documentation (local only)
+docs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite3
+
+# dbt
+dbt_logs/
+_logs/
+target/
+
+# Airflow
+logs/
+
+# Docker
+*.pid
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jenkins
+jenkins_home/
+.jenkins/
+*.xml
+*.groovy
+
+# Terraform (nuvem)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Coverage
+.ruff_cache/
+
+# Node
+node_modules/
+
+# Obsidian (local only)
+.obsidian/

@@ -1,0 +1,79 @@
+version: 2
+
+models:
+  - name: trusted_orders
+    description: "Pedidos validados e enriquecidos com dados de clientes"
+    tests:
+      - dbt_utils.recency:
+          config:
+            field: created_at
+            interval: 4h
+            group_by: [status]
+      - dbt_utils.expression_is_true:
+          expression: "total_amount >= 0"
+    columns:
+      - name: order_id
+        description: "Identificador único do pedido"
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Identificador do cliente"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+      - name: order_date
+        description: "Data do pedido"
+        tests:
+          - not_null
+      - name: total_amount
+        description: "Valor total do pedido"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "total_amount >= 0"
+      - name: status
+        description: "Status do pedido"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+      - name: is_completed
+        description: "Indica se o pedido está completo"
+        tests:
+          - not_null
+      - name: loaded_at
+        description: "Data de carregamento"
+        tests:
+          - not_null
+
+  - name: fct_orders_summary
+    description: "Métricas agregadas de pedidos por dia"
+    tests:
+      - dbt_utils.recency:
+          config:
+            field: computed_at
+            interval: 4h
+      - dbt_utils.expression_is_true:
+          expression: "total_orders >= 0"
+          config:
+            severity: warn
+    columns:
+      - name: order_date
+        tests:
+          - not_null
+      - name: total_orders
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "total_orders >= 0"
+      - name: total_revenue
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "total_revenue >= 0"
+      - name: avg_order_value
+        tests:
+          - not_null

@@ -1,0 +1,42 @@
+database:
+  host: ${DB_HOST}
+  port: 5432
+  name: industrial_logistics_staging
+  user: ${DB_USER}
+  password: ${DB_PASSWORD}
+  pool_size: 10
+  max_overflow: 20
+  echo: false
+
+minio:
+  endpoint: ${MINIO_ENDPOINT}
+  access_key: ${MINIO_ACCESS_KEY}
+  secret_key: ${MINIO_SECRET_KEY}
+  bucket_bronze: bronze
+  bucket_silver: silver
+  bucket_gold: gold
+  region: us-east-1
+
+airflow:
+  url: ${AIRFLOW_URL}
+  user: ${AIRFLOW_USER}
+  password: ${AIRFLOW_PASSWORD}
+  executor: LocalExecutor
+  parallelism: 32
+  dag_concurrency: 16
+
+dbt:
+  target: staging
+  profiles_dir: ./dbt
+  project_dir: .
+
+observability:
+  prometheus_url: ${PROMETHEUS_URL}
+  grafana_url: ${GRAFANA_URL}
+  log_level: INFO
+
+features:
+  enable_data_quality: true
+  enable_audit: true
+  enable_lineage: true
+  enable_sla: true

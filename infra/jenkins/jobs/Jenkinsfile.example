@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+    
+    options {
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '30', daysToKeepStr: '30'))
+    }
+    
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['dev', 'staging', 'prod'], description: 'Target environment')
+        string(name: 'VERSION', defaultValue: 'latest', description: 'Version to deploy')
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Checking out code..."
+                checkout scm
+            }
+        }
+        
+        stage('Lint') {
+            steps {
+                echo "Running linters..."
+                sh "make lint || true"
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                echo "Running tests..."
+                sh "make test || true"
+            }
+        }
+        
+        stage('Build') {
+            when {
+                expression { params.ENVIRONMENT != 'prod' }
+            }
+            steps {
+                echo "Building artifacts..."
+                sh "make build || true"
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                echo "Deploying to ${params.ENVIRONMENT}..."
+                sh "echo Deploying version ${params.VERSION} to ${params.ENVIRONMENT}"
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo "Cleaning workspace..."
+            cleanWs()
+        }
+        success {
+            echo "Pipeline completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed!"
+        }
+    }
+}

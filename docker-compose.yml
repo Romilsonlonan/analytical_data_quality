@@ -1,0 +1,131 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ilp-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-industrial_logistics}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: ilp-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER:-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-admin123}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  airflow-webserver:
+    image: apache/airflow:2.8.1-python3.12
+    container_name: ilp-airflow
+    command: webserver
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://admin:admin123@postgres:5432/industrial_logistics
+      AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
+      _PIP_ADDITIONAL_REQUIREMENTS: 'dbt-postgres great-expectations pandas psycopg2-binary'
+    volumes:
+      - ./orchestration/dags:/opt/airflow/dags
+      - ./orchestration/plugins:/opt/airflow/plugins
+      - ./orchestration/hooks:/opt/airflow/hooks
+      - ./orchestration/sensors:/opt/airflow/sensors
+      - airflow_logs:/opt/airflow/logs
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  airflow-init:
+    image: apache/airflow:2.8.1-python3.12
+    container_name: ilp-airflow-init
+    command: version
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://admin:admin123@postgres:5432/industrial_logistics
+    depends_on:
+      - postgres
+    profiles:
+      - init
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ilp-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ilp-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+    volumes:
+      - ./observability/dashboards/grafana:/etc/grafana/provisioning/dashboards
+      - ./observability/dashboards/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+  jenkins:
+    build:
+      context: ./infra/jenkins
+      dockerfile: Dockerfile
+    container_name: ilp-jenkins
+    environment:
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_PASSWORD:-admin123}
+      DOCKER_HOST: tcp://docker:2375
+      POSTGRES_USER: ${POSTGRES_USER:-datalake}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-datalake123}
+    ports:
+      - "8081:8081"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - postgres
+    privileged: true
+
+volumes:
+  postgres_data:
+  minio_data:
+  airflow_logs:
+  prometheus_data:
+  jenkins_home:

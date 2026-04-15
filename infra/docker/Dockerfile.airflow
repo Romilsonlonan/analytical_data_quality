@@ -1,0 +1,20 @@
+FROM apache/airflow:2.8.1-python3.12
+
+USER root
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+USER airflow
+
+COPY --chown=airflow:airflow . /opt/airflow
+
+ENV DBT_PROFILES_DIR=/opt/airflow/dbt
+ENV PYTHONPATH=/opt/airflow
+
+RUN pip install --no-cache-dir dbt-postgres great-expectations pandas psycopg2-binary
+
+CMD ["webserver"]

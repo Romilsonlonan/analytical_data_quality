@@ -1,0 +1,45 @@
+name: industrial_logistics_platform
+version: '1.0.0'
+
+config-version: 2
+
+vars:
+  environment: dev
+  data_quality_enabled: true
+
+models:
+  industrial_logistics_platform:
+    staging:
+      +schema: staging
+      +materialized: view
+    trusted:
+      +schema: trusted
+      +materialized: table
+    refined:
+      +schema: refined
+      +materialized: table
+
+on-run-start:
+  - "SET search_path TO {{ target.schema }}"
+
+quoting:
+  identifier: true
+  schema: false
+  database: false
+
+docs:
+  node_color: "#3498db"
+
+tests:
+  +store_failures: true
+  +store_failures_as: table
+
+semantic_models:
+  +schema: refined
+
+exposures:
+  +depends_on:
+    - ref('fct_orders_summary')
+  +owner:
+    name: data_team
+    email: data-team@company.com

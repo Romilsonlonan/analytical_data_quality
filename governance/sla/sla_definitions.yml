@@ -1,0 +1,51 @@
+# SLA Definitions
+
+## Pipeline SLAs
+
+| Pipeline | Frequência | SLA | Criticidade |
+|----------|------------|-----|-------------|
+| bronze_ingestion | Contínuo | < 5 min latency | Alta |
+| silver_transformation | A cada 1 hora | < 30 min | Alta |
+| gold_aggregation | A cada 6 horas | < 1 hora | Média |
+| dbt_run | A cada 6 horas | < 15 min | Média |
+
+## Disponibilidade
+
+| Serviço | SLA | Janela Manutenção |
+|---------|-----|-------------------|
+| PostgreSQL | 99.9% | Domingos 02:00-04:00 |
+| MinIO | 99.9% | Domingos 02:00-04:00 |
+| Airflow | 99.5% | Domingos 02:00-04:00 |
+| API | 99.9% | Domingos 02:00-04:00 |
+
+## Qualidade de Dados
+
+| Métrica | Target | Alerta |
+|---------|--------|--------|
+| Completeness | > 99% | < 95% |
+| Accuracy | > 98% | < 95% |
+| Freshness (bronze) | < 1 hora | > 2 horas |
+| Freshness (gold) | < 6 horas | > 12 horas |
+| Duplicates | < 0.1% | > 1% |
+
+## Data Freshness por Schema
+
+| Schema | Update Frequency | Max Delay |
+|--------|------------------|------------|
+| staging | Near real-time | 5 min |
+| trusted | hourly | 30 min |
+| refined | 6x daily | 1 hour |
+
+## Notificações
+
+- **P1** (Pipeline down): SMS + Email imediato
+- **P2** (SLA violation): Email em 15 min
+- **P3** (Quality degradation): Slack daily digest
+
+## Metas de Recuperação
+
+| Cenário | RTO | RPO |
+|--------|-----|-----|
+| PostgreSQL | 4 horas | 1 hora |
+| MinIO | 2 horas | 15 min |
+| Airflow | 1 hora | 0 (stateless) |

@@ -1,0 +1,81 @@
+version: '3.8'
+
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.8.1-python3.12
+  env_file:
+    - .env
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
+    AIRFLOW__CORE__LOGGING_LEVEL: INFO
+    AIRFLOW__CORE__DEFAULT_TIMEZONE: utc
+    _PIP_ADDITIONAL_REQUIREMENTS: ${AIRFLOW_EXTRA_PIP:-dbt-postgres great-expectations pandas psycopg2-binary pyarrow}
+  volumes:
+    - ./orchestration/dags:/opt/airflow/dags
+    - ./orchestration/plugins:/opt/airflow/plugins
+    - ./orchestration/hooks:/opt/airflow/hooks
+    - ./orchestration/sensors:/opt/airflow/sensors
+    - ./orchestration/logs:/opt/airflow/logs
+    - /var/run/docker.sock:/var/run/docker.sock
+  user: "${AIRFLOW_UID}:0"
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-industrial_logistics}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: on-failure
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    restart: on-failure
+
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+    restart: on-failure
+
+  airflow-init:
+    <<: *airflow-common
+    command: version
+    environment:
+      _AIRFLOW_DB_MIGRATE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_USER:-admin}
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_PASSWORD:-admin123}
+    profiles:
+      - init
+
+volumes:
+  postgres_data:

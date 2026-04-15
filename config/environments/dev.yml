@@ -1,0 +1,42 @@
+database:
+  host: localhost
+  port: 5432
+  name: industrial_logistics
+  user: admin
+  password: admin123
+  pool_size: 5
+  max_overflow: 10
+  echo: true
+
+minio:
+  endpoint: localhost:9000
+  access_key: minioadmin
+  secret_key: minioadmin123
+  bucket_bronze: bronze
+  bucket_silver: silver
+  bucket_gold: gold
+  region: us-east-1
+
+airflow:
+  url: http://localhost:8080
+  user: admin
+  password: admin123
+  executor: LocalExecutor
+  parallelism: 16
+  dag_concurrency: 8
+
+dbt:
+  target: dev
+  profiles_dir: ./dbt
+  project_dir: .
+
+observability:
+  prometheus_url: http://localhost:9090
+  grafana_url: http://localhost:3000
+  log_level: DEBUG
+
+features:
+  enable_data_quality: true
+  enable_audit: true
+  enable_lineage: true
+  enable_sla: true

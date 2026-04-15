@@ -1,0 +1,37 @@
+name: dbt Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    paths:
+      - 'dbt/**'
+      - 'dbt_project.yml'
+
+jobs:
+  dbt-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dbt
+        run: pip install dbt-postgres dbt-labs/dbt_utils
+
+      - name: Create profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_PROFILES }}" > ~/.dbt/profiles.yml
+
+      - name: Run dbt deps
+        run: cd dbt && dbt deps
+
+      - name: Run dbt test
+        run: cd dbt && dbt test
+
+      - name: Run dbt run
+        run: cd dbt && dbt run

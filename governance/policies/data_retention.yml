@@ -1,0 +1,45 @@
+# Política de Retenção de Dados
+
+## Retenção por Camada
+
+| Camada | Retenção |justificativa |
+|--------|----------|---------------|
+| Bronze | 90 dias | Dados brutos disponíveis para reprocessamento |
+| Silver | 1 ano | Histórico para análises retrospectivas |
+| Gold | 7 anos | Compliance financeiro e regulatório |
+
+## Retenção por Tipo de Dado
+
+| Tipo | Retenção | Classificação |
+|------|----------|----------------|
+| Logs de auditoria | 7 anos | Obrigatório |
+| Metrics de qualidade | 2 anos | Análise de tendências |
+| Dados de clientes | Conforme Política de Privacidade | LGPD |
+| Backups | 30 dias (diário) | Recuperação de desastres |
+
+## Processo de Exclusão
+
+```python
+# Pseudocode para lifecycle
+def should_delete(data_date, layer):
+    if layer == 'bronze':
+        return (today - data_date).days > 90
+    elif layer == 'silver':
+        return (today - data_date).days > 365
+    elif layer == 'gold':
+        return (today - data_date).days > 2555  # 7 anos
+    return False
+```
+
+## Arquivamento
+
+Dados antes da exclusão devem ser arquivados:
+- Bronze → Exclusão direta
+- Silver → Archive para S3 Glacier
+- Gold → Export para cold storage +metadata
+
+## Conformidade
+
+- Retenção mínima: Satisfazer requisitos legais
+- Exclusão máxima: Não reter além do necessário
+- Documentação: Manter registro de políticas de retenção

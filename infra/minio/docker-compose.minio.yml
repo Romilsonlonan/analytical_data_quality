@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  minio:
+    image: minio/minio:RELEASE.2024-01-16T16-07-38Z
+    container_name: ilp-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-minioadmin123}
+      MINIO_REGION_NAME: us-east-1
+      MINIO_SMS_MAX_WORKERS: 4
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - ilp-network
+
+networks:
+  ilp-network:
+    driver: bridge
+
+volumes:
+  minio_data:
+    driver: local

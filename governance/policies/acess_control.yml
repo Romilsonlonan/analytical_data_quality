@@ -1,0 +1,49 @@
+# Política de Controle de Acesso
+
+## Roles Defined
+
+| Role | Descrição | Permissões |
+|------|-----------|------------|
+| **admin** | Administrador da plataforma | Full access |
+| **engineer** | Engenheiro de dados | Read/Write em todos os schemas |
+| **analyst** | Analista de dados | Read em trusted/refined |
+| **viewer** | Visualizador | Readonly em gold |
+| **pipeline** | Service account pipelines | Read/Write em staging/trusted |
+
+## Permissões por Schema
+
+```sql
+-- staging: Leitura e escrita para engineers e pipelines
+GRANT USAGE ON SCHEMA staging TO engineer, pipeline;
+GRANT ALL ON ALL TABLES IN SCHEMA staging TO engineer, pipeline;
+
+-- trusted: Leitura para analysts, escrita para engineers
+GRANT USAGE ON SCHEMA trusted TO analyst, engineer;
+GRANT SELECT ON ALL TABLES IN SCHEMA trusted TO analyst;
+GRANT ALL ON ALL TABLES IN SCHEMA trusted TO engineer;
+
+-- refined: Leitura para todos, escrita para engineers
+GRANT USAGE ON SCHEMA refined TO viewer, analyst, engineer;
+GRANT SELECT ON ALL TABLES IN SCHEMA refined TO viewer, analyst;
+GRANT ALL ON ALL TABLES IN SCHEMA refined TO engineer;
+
+-- governance: Apenas leitura para audit
+GRANT USAGE ON SCHEMA governance TO engineer, analyst;
+GRANT SELECT ON ALL TABLES IN SCHEMA governance TO engineer, analyst;
+```
+
+## SSO Integration
+
+Plataforma deve integrar com SSO corporativo (Keycloak/LDAP):
+- Usuários mapeados para roles acima
+- MFA obrigatório para admin
+- Session timeout: 8 horas
+
+## Auditoria
+
+Todas as operações são logadas em `governance.audit_log`:
+- Timestamp
+- Usuário
+- Operação (SELECT/INSERT/UPDATE/DELETE)
+- Tabela afetada
+- IP de origem

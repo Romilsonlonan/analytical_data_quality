@@ -1,0 +1,109 @@
+jenkins:
+  numExecutors: 2
+  mode: EXCLUSIVE
+  scmCheckoutRetryCount: 2
+  disableRememberMe: true
+  
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "${JENKINS_ADMIN_PASSWORD:-admin123}"
+
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        - "Overall/Administer:admin"
+        - "Overall/Read:authenticated"
+
+  globalLibraries:
+    libraries:
+      - name: "shared-pipeline"
+        defaultVersion: "main"
+        retriever:
+          modernSCM:
+            scm:
+              filesystem:
+                path: "./jenkins/libs"
+
+  clouds:
+    - docker:
+        name: "docker-local"
+        dockerApi:
+          connectProtocol: "TCP"
+          host: "tcp://docker:2375"
+
+  remotingSecurity:
+    enabled: true
+
+  systemMessage: "Industrial Logistics Platform - Jenkins"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - string:
+              id: "docker-hub-token"
+              scope: GLOBAL
+              secret: "${DOCKER_HUB_TOKEN:-}"
+              description: "Docker Hub Access Token"
+          - string:
+              id: "aws-access-key"
+              scope: GLOBAL
+              secret: "${AWS_ACCESS_KEY_ID:-}"
+              description: "AWS Access Key ID"
+          - string:
+              id: "aws-secret-key"
+              scope: GLOBAL
+              secret: "${AWS_SECRET_ACCESS_KEY:-}"
+              description: "AWS Secret Access Key"
+          - usernamePassword:
+              id: "postgres-credentials"
+              scope: GLOBAL
+              username: "${POSTGRES_USER:-admin}"
+              password: "${POSTGRES_PASSWORD:-admin123}"
+              description: "PostgreSQL Credentials"
+
+unclassified:
+  location:
+    url: "http://localhost:8081"
+    adminAddress: "admin@ilp.local"
+
+  timestamper:
+    allPipelines: true
+
+  defaultView:
+    primaryView: "all"
+
+  globalDefaultView:
+    defaultView: "all"
+
+  buildDiscarders:
+    configuredBuildDiscarders:
+      - "jobBuildDiscarder"
+      - defaultBuildDiscarder:
+          discarder:
+            logRotator:
+              daysToKeepStr: "30"
+              numToKeepStr: "100"
+
+  mailer:
+    smtpHost: "${SMTP_HOST:-localhost}"
+    smtpPort: "${SMTP_PORT:-25}"
+    useSsl: false
+    charset: "UTF-8"
+
+  slackNotifier:
+    teamDomain: "${SLACK_TEAM:-}"
+    token: "${SLACK_TOKEN:-}"
+    room: "${SLACK_CHANNEL:-}"
+    notifyEveryFailure: true
+
+  junitTestResultStorage:
+    storage:
+      fileStorage:
+        directory: "${JENKINS_HOME}/test-results"
+
+  buildStepOperation:
+    enabled: true

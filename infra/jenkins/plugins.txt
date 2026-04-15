@@ -1,0 +1,8 @@
+docker
+git
+workflow-aggregator
+pipeline-stage-view
+blueocean
+job-dsl
+timestamper
+locale

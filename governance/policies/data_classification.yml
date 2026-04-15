@@ -1,0 +1,41 @@
+# Classificação de Dados
+
+## Níveis de Sensibilidade
+
+| Classificação | Descrição | Exemplos | Tratamento |
+|---------------|-----------|----------|-------------|
+| **Público** | Dados sem restrição | Dados agregados, métricas públicas | Sem restrição |
+| **Interno** | Dados apenas para uso interno | Relatórios internos, dashboards | Acesso autenticado |
+| **Confidencial** | Dados sensíveis de negócio | Métricas financeiras, forecasts | Criptografia em repouso |
+| **Restrito** | Dados críticos/pessoais | Dados de clientes, senhas | Criptografia + auditoria |
+
+## Regras de Classificação
+
+### Automática
+- Dados contendo CPF, CNPJ, RG → Confidencial
+- Dados financeiros → Confidencial
+- Dados de saúde → Restrito
+
+### Manual
+- Novos datasets devem ser classificados antes do uso
+- Revisão trimestral de classificação
+
+## Implementação
+
+```yaml
+# Exemplo de tag em tabela
+tables:
+  - name: customers
+    classification: confidential
+    fields:
+      - name: cpf
+        classification: restricted
+      - name: email
+        classification: confidential
+```
+
+## Acesso
+
+- Leitura: Required角色 com permissão соответствующая
+- Escrita: Admin + aprovação do proprietário do dado
+- Exportação: Auditoria obligatoria para dados Confidencial/Restrito
