@@ -1,10 +1,10 @@
 """Application use cases."""
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from src.domain.entities.logistica import Order, OrderStatus, Delivery
-from src.domain.services import OrderDomainService, DeliveryDomainService
+from src.domain.services import OrderDomainService
 from src.application.dto import CreateOrderDTO, OrderDTO, DeliveryDTO
 
 

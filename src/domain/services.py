@@ -1,10 +1,9 @@
 """Domain services - business logic."""
 
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List
 
-from src.domain.entities.logistica import Order, Delivery, OrderStatus, Inventory
-from src.domain.value_objects import DateRange
+from src.domain.entities.logistica import Order, Delivery, Inventory
 
 
 class OrderDomainService:

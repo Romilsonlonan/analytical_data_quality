@@ -1,5 +1,5 @@
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from typing import Any, Dict, List, Optional
+from typing import Any, List
 
 class IndustrialLogisticsPostgresHook(PostgresHook):
     """
