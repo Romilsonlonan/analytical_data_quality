@@ -32,7 +32,6 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    environment: main
     steps:
       - uses: actions/checkout@v4
 
