@@ -21,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.12.9'
           cache: 'poetry'
 
       - name: Install dependencies
@@ -38,6 +38,7 @@ jobs:
           cp profiles.yml profiles.yml
           poetry run dbt deps
           poetry run dbt debug
-          poetry run dbt test
           poetry run dbt run
+          poetry run dbt test
+
 
