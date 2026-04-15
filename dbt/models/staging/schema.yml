@@ -160,3 +160,44 @@ sources:
             tests:
               - not_null
           - name: updated_at
+
+  - name: bronze
+    description: "Dados da camada Bronze - Dados brutos do setor de vendas"
+    database: warehouse
+    schema: bronze
+    loader: python_script
+    loaded_at_field: loaded_at
+    freshness:
+      warn_after: {count: 1, period: hour}
+      error_after: {count: 24, period: hour}
+    tables:
+      - name: quali_vendas
+        description: "Dados qualitativos de vendas do Google Sheets"
+        identifier: bronze_quali_vendas
+        columns:
+          - name: data_venda
+            description: "Data da venda"
+          - name: vendedor_id
+            description: "Identificador do vendedor"
+          - name: etapa_funil
+            description: "Etapa do funil de vendas"
+          - name: tipo_atividade
+            description: "Tipo de atividade realizada"
+          - name: data_inicio
+            description: "Data e hora de início"
+          - name: data_fim
+            description: "Data e hora de fim"
+          - name: inicio_hora
+            description: "Hora de início"
+          - name: fim_hora
+            description: "Hora de fim"
+          - name: duracao_min
+            description: "Duração em minutos"
+          - name: cliente_id
+            description: "Identificador do cliente"
+          - name: resultado
+            description: "Resultado da atividade"
+          - name: valor_venda
+            description: "Valor da venda"
+          - name: loaded_at
+            description: "Data de carregamento"

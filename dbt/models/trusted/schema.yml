@@ -77,3 +77,63 @@ models:
       - name: avg_order_value
         tests:
           - not_null
+
+  - name: trusted_setor_vendas
+    description: "Dados do setor de vendas tratados e enriquecidos"
+    columns:
+      - name: data_venda
+        description: "Data da venda"
+        tests:
+          - not_null
+      - name: vendedor_id
+        description: "Identificador do vendedor"
+        tests:
+          - not_null
+      - name: etapa_funil
+        description: "Etapa do funil de vendas"
+      - name: tipo_atividade
+        description: "Tipo de atividade"
+      - name: duracao_min
+        description: "Duração em minutos"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "duracao_min >= 0"
+      - name: cliente_id
+        description: "Identificador do cliente"
+      - name: resultado
+        description: "Resultado da atividade"
+      - name: valor_venda
+        description: "Valor da venda"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "valor_venda >= 0"
+      - name: status_negociacao
+        description: "Status da negociação"
+      - name: tem_venda
+        description: "Indica se tem venda"
+
+  - name: fct_setor_vendas
+    description: "Métricas agregadas do setor de vendas por dia/vendedor"
+    columns:
+      - name: data_atividade
+        description: "Data da atividade"
+        tests:
+          - not_null
+      - name: vendedor_id
+        description: "Identificador do vendedor"
+        tests:
+          - not_null
+      - name: total_atividades
+        description: "Total de atividades"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "total_atividades >= 0"
+      - name: duracao_total_min
+        description: "Duração total em minutos"
+      - name: valor_venda_total
+        description: "Valor total de vendas"
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "valor_venda_total >= 0"
+      - name: qtde_vendas
+        description: "Quantidade de vendas"

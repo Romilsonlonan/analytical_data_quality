@@ -31,6 +31,20 @@ def ingest_deliveries():
     pass
 
 
+def ingest_quali_vendas():
+    """Ingest qualitative sales data to bronze layer"""
+    import sys
+
+    sys.path.insert(
+        0, "/home/romilson/Projetos/Industrial-Logistic-Management/analytical_data_quality"
+    )
+    from src.pipelines.bronze.setor_vendas import quali_vendas
+
+    result = quali_vendas.run_quali_vendas(source="excel", file_path="data/raw/quali_vendas.xlsx")
+    print(f"Quali Vendas: {result}")
+    return result
+
+
 def validate_bronze():
     """Validate bronze layer data quality"""
     print("Validating bronze data quality...")
@@ -60,9 +74,14 @@ with DAG(
         python_callable=ingest_deliveries,
     )
 
+    quali_vendas = PythonOperator(
+        task_id="ingest_quali_vendas",
+        python_callable=ingest_quali_vendas,
+    )
+
     validate = PythonOperator(
         task_id="validate_bronze",
         python_callable=validate_bronze,
     )
 
-    start >> [orders, deliveries] >> validate
+    start >> [orders, deliveries, quali_vendas] >> validate
