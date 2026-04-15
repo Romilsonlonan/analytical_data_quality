@@ -1,5 +1,6 @@
 name: industrial_logistics_platform
 version: '1.0.0'
+profile: ilp_dev
 
 config-version: 2
 
@@ -9,6 +10,8 @@ vars:
 
 models:
   industrial_logistics_platform:
+    +docs:
+      node_color: "#3498db"
     staging:
       +schema: staging
       +materialized: view
@@ -30,3 +33,4 @@ quoting:
 tests:
   +store_failures: true
   +store_failures_as: table
+
