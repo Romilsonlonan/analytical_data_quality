@@ -4,7 +4,7 @@ ilp_dev:
     dev:
       type: postgres
       host: "{{ env_var('POSTGRES_LAKEHOUSE_HOST', 'localhost') }}"
-      port: "{{ env_var('POSTGRES_LAKEHOUSE_PORT', '5432') }}"
+      port: "{{ env_var('POSTGRES_LAKEHOUSE_PORT', '5432') | as_number }}"
       user: "{{ env_var('POSTGRES_USER', 'lakehouse') }}"
       password: "{{ env_var('POSTGRES_PASSWORD') }}"
       dbname: "{{ env_var('POSTGRES_LAKEHOUSE_DB', 'lakehouse') }}"
@@ -16,7 +16,7 @@ ilp_dev:
     prod:
       type: postgres
       host: "{{ env_var('POSTGRES_LAKEHOUSE_HOST') }}"
-      port: "{{ env_var('POSTGRES_LAKEHOUSE_PORT', '5432') }}"
+      port: "{{ env_var('POSTGRES_LAKEHOUSE_PORT', '5432') | as_number }}"
       user: "{{ env_var('POSTGRES_USER') }}"
       password: "{{ env_var('POSTGRES_PASSWORD') }}"
       dbname: "{{ env_var('POSTGRES_LAKEHOUSE_DB', 'lakehouse') }}"
