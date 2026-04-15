@@ -40,7 +40,7 @@ help:
 	@echo "  make clean        - Clean temporary files"
 
 install:
-	pip install -e .
+	poetry install
 
 setup:
 	bash scripts/setup.sh

@@ -14,11 +14,8 @@ python3 --version
 
 echo ""
 echo "Installing dependencies..."
-if command -v poetry &> /dev/null; then
-    poetry install
-elif command -v pip &> /dev/null; then
-    pip install -e .
-fi
+poetry install --no-interaction --no-root
+
 
 echo ""
 echo "Setting up dbt..."
