@@ -28,7 +28,7 @@ jobs:
         run: poetry run ruff check .
 
       - name: Run black
-        run: poetry run black --check .
+        run: poetry run black --check --diff .
 
       - name: Run mypy
         run: poetry run mypy .
