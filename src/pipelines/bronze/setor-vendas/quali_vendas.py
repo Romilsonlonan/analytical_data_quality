@@ -9,7 +9,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 BRONZE_PATH = Path("data/bronze/setor-vendas")
 SPREADSHEET_URL = (
     "https://docs.google.com/spreadsheets/d/1vV7b1eXG6OPrLgBqbTvhR9OSMz8HnfBgI-jC5VfJP78/edit?gid=0"

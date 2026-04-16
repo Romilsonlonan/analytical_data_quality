@@ -11,7 +11,6 @@ from pathlib import Path
 import pandas as pd
 from rich.console import Console
 
-
 console = Console()
 SILVER_PATH = Path("data/silver/setor-vendas")
 GOLD_PATH = Path("data/gold/setor-vendas")

@@ -1,12 +1,13 @@
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from typing import Any, List
 
+
 class IndustrialLogisticsPostgresHook(PostgresHook):
     """
     Custom Hook for Industrial Logistics Platform.
     Wraps the standard PostgresHook with project-specific defaults.
     """
-    
+
     def __init__(self, postgres_conn_id: str = "postgres_default", *args, **kwargs):
         super().__init__(postgres_conn_id=postgres_conn_id, *args, **kwargs)
 

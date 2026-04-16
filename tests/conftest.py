@@ -108,6 +108,7 @@ def great_expectations_context(project_root):
                 pass
             else:
                 import great_expectations as ge
+
                 return ge.get_context(context_root_dir=str(ge_path))
         except ImportError:
             pass

@@ -7,7 +7,6 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 
-
 default_args = {
     "owner": "data-engineer",
     "depends_on_past": False,

@@ -9,7 +9,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 BRONZE_PATH = Path("data/bronze/setor-vendas")
 SILVER_PATH = Path("data/silver/setor-vendas")
 
